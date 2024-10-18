@@ -1,2 +1,4 @@
 .aider*
 /downloaded_site
+*.zip
+.DS_Store
