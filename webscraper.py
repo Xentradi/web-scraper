@@ -12,23 +12,27 @@ def download_file(url, folder):
                 f.write(chunk)
     return local_filename
 
-def scrape_website(url, download_folder='downloaded_site', visited=None):
-    if visited is None:
-        visited = set()
+from collections import deque
+
+def scrape_website(start_url, download_folder='downloaded_site'):
+    visited = set()
+    queue = deque([start_url])
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
 
-    normalized_url = urlparse(url)._replace(fragment='').geturl()
-    if normalized_url in visited:
-        return
-    visited.add(normalized_url)
+    while queue:
+        url = queue.popleft()
+        normalized_url = urlparse(url)._replace(fragment='').geturl()
+        if normalized_url in visited:
+            continue
+        visited.add(normalized_url)
 
-    try:
-        response = requests.get(normalized_url)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        print(f"Failed to retrieve {normalized_url}: {e}")
-        return
+        try:
+            response = requests.get(normalized_url)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            print(f"Failed to retrieve {normalized_url}: {e}")
+            continue
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -51,11 +55,6 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
         for source in audio.find_all('source'):
             audio_url = urljoin(url, source.get('src'))
             download_file(audio_url, download_folder)
-    # Handle pagination by following "next" links
-    next_page = soup.find('a', text='Next')
-    if next_page:
-        next_page_url = urljoin(url, next_page.get('href'))
-        scrape_website(next_page_url, download_folder, visited)
 
     # Save the HTML content of the page
     page_name = urlparse(url).path.strip('/').replace('/', '_') or 'index'
@@ -67,7 +66,8 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
     for link in soup.find_all('a', href=True):
         link_url = urljoin(url, link.get('href'))
         if urlparse(link_url).netloc == urlparse(url).netloc:  # Only follow internal links
-            scrape_website(link_url, download_folder, visited)
+            if link_url not in visited:
+                queue.append(link_url)
 if __name__ == "__main__":
     website_url = "https://accords-library.com"  # Replace with the target website URL
     scrape_website(website_url)
