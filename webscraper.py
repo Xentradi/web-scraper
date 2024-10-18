@@ -29,16 +29,11 @@ def scrape_website(url, download_folder='downloaded_site'):
         css_url = urljoin(url, css.get('href'))
         download_file(css_url, download_folder)
 
-    # Download all JS
-    for script in soup.find_all('script'):
-        if script.get('src'):
-            js_url = urljoin(url, script.get('src'))
-            download_file(js_url, download_folder)
-
-    # Save the HTML file
-    html_file_path = os.path.join(download_folder, 'index.html')
-    with open(html_file_path, 'w', encoding='utf-8') as f:
-        f.write(soup.prettify())
+    # Extract and save text content
+    text_content = soup.get_text(separator='\n', strip=True)
+    text_file_path = os.path.join(download_folder, 'content.txt')
+    with open(text_file_path, 'w', encoding='utf-8') as f:
+        f.write(text_content)
 
 if __name__ == "__main__":
     website_url = "https://accords-library.com"  # Replace with the target website URL
