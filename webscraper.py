@@ -46,19 +46,16 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
         img_url = urljoin(url, img.get('src'))
         download_file(img_url, download_folder)
 
-    # Download all CSS
-    for css in soup.find_all('link', rel='stylesheet'):
-        css_url = urljoin(url, css.get('href'))
-        download_file(css_url, download_folder)
-
     # Download other media files (audio, etc.)
     for audio in soup.find_all('audio'):
         for source in audio.find_all('source'):
             audio_url = urljoin(url, source.get('src'))
             download_file(audio_url, download_folder)
-    for css in soup.find_all('link', rel='stylesheet'):
-        css_url = urljoin(url, css.get('href'))
-        download_file(css_url, download_folder)
+    # Handle pagination by following "next" links
+    next_page = soup.find('a', text='Next')
+    if next_page:
+        next_page_url = urljoin(url, next_page.get('href'))
+        scrape_website(next_page_url, download_folder, visited)
 
     # Save the HTML content of the page
     page_name = urlparse(url).path.strip('/').replace('/', '_') or 'index'
