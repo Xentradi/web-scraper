@@ -12,11 +12,23 @@ def download_file(url, folder):
                 f.write(chunk)
     return local_filename
 
-def scrape_website(url, download_folder='downloaded_site'):
+def scrape_website(url, download_folder='downloaded_site', visited=None):
+    if visited is None:
+        visited = set()
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
 
-    response = requests.get(url)
+    if url in visited:
+        return
+    visited.add(url)
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Failed to retrieve {url}: {e}")
+        return
+
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # Download all images
@@ -35,6 +47,10 @@ def scrape_website(url, download_folder='downloaded_site'):
     with open(text_file_path, 'w', encoding='utf-8') as f:
         f.write(text_content)
 
-if __name__ == "__main__":
+    # Traverse and scrape all links
+    for link in soup.find_all('a', href=True):
+        link_url = urljoin(url, link.get('href'))
+        if urlparse(link_url).netloc == urlparse(url).netloc:  # Only follow internal links
+            scrape_website(link_url, download_folder, visited)
     website_url = "https://accords-library.com"  # Replace with the target website URL
     scrape_website(website_url)
