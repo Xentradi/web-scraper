@@ -37,7 +37,25 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
         img_url = urljoin(url, img.get('src'))
         download_file(img_url, download_folder)
 
+    # Download all video files
+    for video in soup.find_all('video'):
+        for source in video.find_all('source'):
+            video_url = urljoin(url, source.get('src'))
+            download_file(video_url, download_folder)
+    for img in soup.find_all('img'):
+        img_url = urljoin(url, img.get('src'))
+        download_file(img_url, download_folder)
+
     # Download all CSS
+    for css in soup.find_all('link', rel='stylesheet'):
+        css_url = urljoin(url, css.get('href'))
+        download_file(css_url, download_folder)
+
+    # Download other media files (audio, etc.)
+    for audio in soup.find_all('audio'):
+        for source in audio.find_all('source'):
+            audio_url = urljoin(url, source.get('src'))
+            download_file(audio_url, download_folder)
     for css in soup.find_all('link', rel='stylesheet'):
         css_url = urljoin(url, css.get('href'))
         download_file(css_url, download_folder)
