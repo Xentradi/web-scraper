@@ -18,15 +18,16 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
     if not os.path.exists(download_folder):
         os.makedirs(download_folder)
 
-    if url in visited:
+    normalized_url = urlparse(url)._replace(fragment='').geturl()
+    if normalized_url in visited:
         return
-    visited.add(url)
+    visited.add(normalized_url)
 
     try:
-        response = requests.get(url)
+        response = requests.get(normalized_url)
         response.raise_for_status()
     except requests.RequestException as e:
-        print(f"Failed to retrieve {url}: {e}")
+        print(f"Failed to retrieve {normalized_url}: {e}")
         return
 
     soup = BeautifulSoup(response.text, 'html.parser')
