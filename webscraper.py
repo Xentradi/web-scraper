@@ -41,5 +41,5 @@ def scrape_website(url, download_folder='downloaded_site'):
         f.write(soup.prettify())
 
 if __name__ == "__main__":
-    website_url = "http://example.com"  # Replace with the target website URL
+    website_url = "https://accords-library.com"  # Replace with the target website URL
     scrape_website(website_url)
