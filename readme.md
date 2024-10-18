@@ -21,10 +21,10 @@ The web scraper operates by starting at a given URL and sequentially visiting ea
 ## Installation
 
 1. Clone the repository to your local machine.
-2. Install the required Python libraries using pip:
+2. Install the required Python libraries using the `requirements.txt` file:
 
    ```bash
-   pip install requests beautifulsoup4
+   pip install -r requirements.txt
    ```
 
 ## Usage
