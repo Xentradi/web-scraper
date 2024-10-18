@@ -2,6 +2,10 @@
 
 This project is a simple web scraper that downloads a website and all its static assets, such as images, CSS, and JavaScript files, and stores them locally. It uses Python along with the `requests` and `beautifulsoup4` libraries.
 
+## How It Works
+
+The web scraper operates by starting at a given URL and sequentially visiting each page it encounters. It uses a queue to manage the URLs to be visited and a set to keep track of visited URLs to avoid processing the same page multiple times. The scraper downloads images, videos, and audio files from each page and saves the HTML content locally. It only follows internal links to ensure it stays within the target website.
+
 ## Features
 
 - Downloads HTML content of a webpage.
