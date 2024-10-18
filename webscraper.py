@@ -52,5 +52,6 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
         link_url = urljoin(url, link.get('href'))
         if urlparse(link_url).netloc == urlparse(url).netloc:  # Only follow internal links
             scrape_website(link_url, download_folder, visited)
+if __name__ == "__main__":
     website_url = "https://accords-library.com"  # Replace with the target website URL
     scrape_website(website_url)
