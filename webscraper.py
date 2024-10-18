@@ -41,11 +41,11 @@ def scrape_website(url, download_folder='downloaded_site', visited=None):
         css_url = urljoin(url, css.get('href'))
         download_file(css_url, download_folder)
 
-    # Extract and save text content
-    text_content = soup.get_text(separator='\n', strip=True)
-    text_file_path = os.path.join(download_folder, 'content.txt')
-    with open(text_file_path, 'w', encoding='utf-8') as f:
-        f.write(text_content)
+    # Save the HTML content of the page
+    page_name = urlparse(url).path.strip('/').replace('/', '_') or 'index'
+    html_file_path = os.path.join(download_folder, f"{page_name}.html")
+    with open(html_file_path, 'w', encoding='utf-8') as f:
+        f.write(soup.prettify())
 
     # Traverse and scrape all links
     for link in soup.find_all('a', href=True):
